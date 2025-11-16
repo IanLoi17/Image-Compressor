@@ -1,0 +1,28 @@
+# Visual Studio
+*.sln.doc
+*.suo
+*.user
+*.vcxproj.filters
+*.vcxproj.user
+
+# Build outputs
+[Oo]bj/
+[Bb]in/
+[Rr]elease/
+[Dd]ebug/
+[Rr]elease*/
+[Dd]ebug*/
+x64/
+Win32/
+$(Platform)/
+$(Configuration)/
+*.exe
+*.dll
+*.pdb
+*.obj
+*.ilk
+*.lib
+*.log
+
+# User-specific
+.vs/
