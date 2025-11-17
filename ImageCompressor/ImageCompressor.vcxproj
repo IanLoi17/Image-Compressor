@@ -129,12 +129,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EnergyCalculator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SeamCarver.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EnergyCalculator.h" />
     <ClInclude Include="SeamCarver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

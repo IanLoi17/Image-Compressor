@@ -21,6 +21,7 @@ int main()
 		for (int i = 0; i < seamsToRemove; i++)
 		{
 			carver.removeVerticalSeam();
+			carver.removeHorizontalSeam();
 		}
 
 		cv::Mat result = carver.getImage();
