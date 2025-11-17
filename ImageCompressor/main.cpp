@@ -1,5 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <chrono>
 #include "SeamCarver.h"
 
 int main()
@@ -18,23 +19,31 @@ int main()
 		int seamsToRemove = 50;
 		std::cout << "RUNNING Dynamic Programming..." << std::endl;
 		SeamCarver carverDP(originalImg.clone());
+		auto startDP = std::chrono::high_resolution_clock::now();
 
 		for (int i = 0; i < seamsToRemove; i++)
 		{
 			carverDP.removeVerticalSeam(false);
-			carverDP.removeHorizontalSeam();
 		}
+
+		auto endDP = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> durationDP = endDP - startDP;
+		std::cout << "Compressed DP Time: " << durationDP.count() << " seconds..." << std::endl;
 
 		cv::imwrite("Images/compressed.jpg", carverDP.getImage());
 
 		std::cout << "RUNNING Greedy Algorithm..." << std::endl;
 		SeamCarver carverGreedy(originalImg.clone());
+		auto startGreedy = std::chrono::high_resolution_clock::now();
 
 		for (int i = 0; i < seamsToRemove; i++)
 		{
 			carverGreedy.removeVerticalSeam(true);
-			carverGreedy.removeHorizontalSeam();
 		}
+
+		auto endGreedy = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> durationGreedy = endGreedy - startGreedy;
+		std::cout << "Compressed Greedy Time: " << durationGreedy.count() << " seconds..." << std::endl;
 
 		cv::imwrite("Images/compressedGreedy.jpg", carverGreedy.getImage());
 

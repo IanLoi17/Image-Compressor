@@ -179,6 +179,43 @@ std::vector<int> SeamCarver::findVerticalSeamGreedy()
 	return seam;
 }
 
+std::vector<int> SeamCarver::findHorizontalSeamGreedy()
+{
+	int rows = energyMap.rows;
+	int cols = energyMap.cols;
+
+	std::vector<int> seam(cols);
+
+	double minVal;
+	cv::Point minLoc;
+	cv::minMaxLoc(energyMap.col(0), &minVal, nullptr, &minLoc, nullptr);
+
+	int currRow = minLoc.y;
+	seam[0] = currRow;
+
+	for (int j = 1; j < cols; j++)
+	{
+		double minEnergy = energyMap.at<double>(currRow, j);
+		int nextRow = currRow;
+
+		if (currRow > 0 && energyMap.at<double>(currRow - 1, j) < minEnergy)
+		{
+			minEnergy = energyMap.at<double>(currRow - 1, j);
+			nextRow = currRow - 1;
+		}
+
+		if (currRow < rows - 1 && energyMap.at<double>(currRow + 1, j) < minEnergy)
+		{
+			nextRow = currRow + 1;
+		}
+
+		currRow = nextRow;
+		seam[j] = currRow;
+	}
+
+	return seam;
+}
+
 void SeamCarver::removeSeam(std::vector<int> const& seam, bool vertical)
 {
 	if (vertical)
@@ -241,9 +278,20 @@ void SeamCarver::removeVerticalSeam(bool useGreedy)
 	removeSeam(seam, true);
 }
 
-void SeamCarver::removeHorizontalSeam()
+void SeamCarver::removeHorizontalSeam(bool useGreedy)
 {
-	std::vector<int> seam = findHorizontalSeam();
+	std::vector<int> seam;
+
+	if (useGreedy)
+	{
+		seam = findHorizontalSeamGreedy();
+	}
+
+	else
+	{
+		seam = findHorizontalSeam();
+	}
+
 	removeSeam(seam, false);
 }
 
