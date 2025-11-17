@@ -33,7 +33,7 @@ std::vector<int> SeamCarver::findVerticalSeam()
 
 	for (int i = 1; i < rows; i++)
 	{
-		for (int j = 1; j < cols; j++)
+		for (int j = 0; j < cols; j++)
 		{
 			double minEnergy = dpTable.at<double>(i - 1, j);
 
@@ -147,63 +147,36 @@ std::vector<int> SeamCarver::findVerticalSeamGreedy()
 	int rows = energyMap.rows;
 	int cols = energyMap.cols;
 
-	double bestTotalEnergy = std::numeric_limits<double>::max();
-	std::vector<int> bestSeam;
+	std::vector<int> seam(rows);
 
-	for (int startCol = 0; startCol < cols; ++startCol)
+	double minVal;
+	cv::Point minLoc;
+	cv::minMaxLoc(energyMap.row(0), &minVal, nullptr, &minLoc, nullptr);
+
+	int currCol = minLoc.x;
+	seam[0] = currCol;
+
+	for (int i = 1; i < rows; i++)
 	{
-		double currTotalEnergy = 0.0;
-		std::vector<int> currSeam(rows);
+		double minEnergy = energyMap.at<double>(i, currCol);
+		int nextCol = currCol;
 
-		int currCol = startCol;
-		currSeam[0] = currCol;
-		currTotalEnergy += energyMap.at<double>(0, currCol);
-
-		for (int i = 0; i < rows - 1; ++i)
+		if (currCol > 0 && energyMap.at<double>(i, currCol - 1) < minEnergy)
 		{
-			double minNextEnergy = std::numeric_limits<double>::max();
-			int nextCol = currCol;
-
-			if (currCol > 0)
-			{
-				double val = energyMap.at<double>(i + 1, currCol - 1);
-				if (val < minNextEnergy)
-				{
-					minNextEnergy = val;
-					nextCol = currCol - 1;
-				}
-			}
-
-			double valMid = energyMap.at<double>(i + 1, currCol);
-			if (valMid < minNextEnergy)
-			{
-				minNextEnergy = valMid;
-				nextCol = currCol;
-			}
-
-			if (currCol < cols - 1)
-			{
-				double valRight = energyMap.at<double>(i + 1, currCol + 1);
-				if (valRight < minNextEnergy)
-				{
-					minNextEnergy = valRight;
-					nextCol = currCol + 1;
-				}
-			}
-
-			currCol = nextCol;
-			currSeam[i + 1] = currCol;
-			currTotalEnergy += minNextEnergy;
+			minEnergy = energyMap.at<double>(i, currCol - 1);
+			nextCol = currCol - 1;
 		}
 
-		if (currTotalEnergy < bestTotalEnergy)
+		if (currCol < cols - 1 && energyMap.at<double>(i, currCol + 1) < minEnergy)
 		{
-			bestTotalEnergy = currTotalEnergy;
-			bestSeam = currSeam;
+			nextCol = currCol + 1;
 		}
+
+		currCol = nextCol;
+		seam[i] = currCol;
 	}
 
-	return bestSeam;
+	return seam;
 }
 
 void SeamCarver::removeSeam(std::vector<int> const& seam, bool vertical)
