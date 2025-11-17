@@ -7,7 +7,7 @@ class SeamCarver
 public:
 	SeamCarver(cv::Mat const& img);
 
-	void removeVerticalSeam();
+	void removeVerticalSeam(bool useGreedy);
 	void removeHorizontalSeam();
 	cv::Mat getImage() const;
 	cv::Mat getEnergyMap() const;
@@ -19,5 +19,6 @@ private:
 	void calculateEnergyMap();
 	std::vector<int> findVerticalSeam();
 	std::vector<int> findHorizontalSeam();
+	std::vector<int> findVerticalSeamGreedy();
 	void removeSeam(std::vector<int> const& seam, bool vertical);
 };

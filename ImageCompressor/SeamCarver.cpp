@@ -142,6 +142,70 @@ std::vector<int> SeamCarver::findHorizontalSeam()
 	return seam;
 }
 
+std::vector<int> SeamCarver::findVerticalSeamGreedy()
+{
+	int rows = energyMap.rows;
+	int cols = energyMap.cols;
+
+	double bestTotalEnergy = std::numeric_limits<double>::max();
+	std::vector<int> bestSeam;
+
+	for (int startCol = 0; startCol < cols; ++startCol)
+	{
+		double currTotalEnergy = 0.0;
+		std::vector<int> currSeam(rows);
+
+		int currCol = startCol;
+		currSeam[0] = currCol;
+		currTotalEnergy += energyMap.at<double>(0, currCol);
+
+		for (int i = 0; i < rows - 1; ++i)
+		{
+			double minNextEnergy = std::numeric_limits<double>::max();
+			int nextCol = currCol;
+
+			if (currCol > 0)
+			{
+				double val = energyMap.at<double>(i + 1, currCol - 1);
+				if (val < minNextEnergy)
+				{
+					minNextEnergy = val;
+					nextCol = currCol - 1;
+				}
+			}
+
+			double valMid = energyMap.at<double>(i + 1, currCol);
+			if (valMid < minNextEnergy)
+			{
+				minNextEnergy = valMid;
+				nextCol = currCol;
+			}
+
+			if (currCol < cols - 1)
+			{
+				double valRight = energyMap.at<double>(i + 1, currCol + 1);
+				if (valRight < minNextEnergy)
+				{
+					minNextEnergy = valRight;
+					nextCol = currCol + 1;
+				}
+			}
+
+			currCol = nextCol;
+			currSeam[i + 1] = currCol;
+			currTotalEnergy += minNextEnergy;
+		}
+
+		if (currTotalEnergy < bestTotalEnergy)
+		{
+			bestTotalEnergy = currTotalEnergy;
+			bestSeam = currSeam;
+		}
+	}
+
+	return bestSeam;
+}
+
 void SeamCarver::removeSeam(std::vector<int> const& seam, bool vertical)
 {
 	if (vertical)
@@ -187,9 +251,20 @@ void SeamCarver::removeSeam(std::vector<int> const& seam, bool vertical)
 	calculateEnergyMap();
 }
 
-void SeamCarver::removeVerticalSeam()
+void SeamCarver::removeVerticalSeam(bool useGreedy)
 {
-	std::vector<int> seam = findVerticalSeam();
+	std::vector<int> seam;
+
+	if (useGreedy)
+	{
+		seam = findVerticalSeamGreedy();
+	}
+
+	else
+	{
+		seam = findVerticalSeam();
+	}
+
 	removeSeam(seam, true);
 }
 

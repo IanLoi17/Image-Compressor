@@ -6,31 +6,41 @@ int main()
 {
 	try
 	{
-		cv::Mat image = cv::imread("Images/image.jpg");
-		if (image.empty())
+		cv::Mat originalImg = cv::imread("Images/image.jpg");
+		if (originalImg.empty())
 		{
 			std::cout << "ERROR: Could not load image..." << std::endl;
 			return -1;
 		}
 
-		std::cout << "Origial size: " << image.cols << "x" << image.rows << std::endl;
-
-		SeamCarver carver(image);
+		std::cout << "Origial size: " << originalImg.cols << "x" << originalImg.rows << std::endl;
 
 		int seamsToRemove = 50;
+		std::cout << "RUNNING Dynamic Programming..." << std::endl;
+		SeamCarver carverDP(originalImg.clone());
+
 		for (int i = 0; i < seamsToRemove; i++)
 		{
-			carver.removeVerticalSeam();
-			carver.removeHorizontalSeam();
+			carverDP.removeVerticalSeam(false);
+			carverDP.removeHorizontalSeam();
 		}
 
-		cv::Mat result = carver.getImage();
-		std::cout << "New size: " << result.cols << "x" << result.rows << std::endl;
+		cv::imwrite("Images/compressed.jpg", carverDP.getImage());
 
-		cv::imwrite("Images/compressed.jpg", result);
+		std::cout << "RUNNING Greedy Algorithm..." << std::endl;
+		SeamCarver carverGreedy(originalImg.clone());
 
-		cv::imshow("Original", image);
-		cv::imshow("Compressed (Carved): ", result);
+		for (int i = 0; i < seamsToRemove; i++)
+		{
+			carverGreedy.removeVerticalSeam(true);
+			carverGreedy.removeHorizontalSeam();
+		}
+
+		cv::imwrite("Images/compressedGreedy.jpg", carverGreedy.getImage());
+
+		cv::imshow("Original", originalImg);
+		cv::imshow("Compressed (Carved DP): ", carverDP.getImage());
+		cv::imshow("Compressed (Carved Greedy): ", carverGreedy.getImage());
 		cv::waitKey(0);
 
 		return 0;
