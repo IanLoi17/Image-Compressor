@@ -24,6 +24,7 @@ int main()
 		for (int i = 0; i < seamsToRemove; i++)
 		{
 			carverDP.removeVerticalSeam(false);
+			//carverDP.removeHorizontalSeam(false);
 		}
 
 		auto endDP = std::chrono::high_resolution_clock::now();
@@ -39,6 +40,7 @@ int main()
 		for (int i = 0; i < seamsToRemove; i++)
 		{
 			carverGreedy.removeVerticalSeam(true);
+			//carverGreedy.removeHorizontalSeam(true);
 		}
 
 		auto endGreedy = std::chrono::high_resolution_clock::now();
