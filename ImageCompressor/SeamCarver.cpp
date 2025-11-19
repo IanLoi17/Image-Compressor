@@ -304,3 +304,34 @@ cv::Mat SeamCarver::getEnergyMap() const
 {
 	return energyMap.clone();
 }
+
+cv::Mat SeamCarver::carveSeamOnceAndShow(bool vertical)
+{
+	cv::Mat newImg = image.clone();
+	std::vector<int> seam;
+	if (vertical)
+	{
+		seam = findVerticalSeam();
+		for (int i = 0; i < image.rows; i++)
+		{
+			newImg.at<cv::Vec3b>(i, seam[i]) = cv::Vec3b(0, 0, 255);
+		}
+	}
+	else
+	{
+		seam = findHorizontalSeam();
+		for (int i = 0; i < image.cols; i++)
+		{
+			newImg.at<cv::Vec3b>(seam[i], i) = cv::Vec3b(0, 0, 255);
+		}
+	}
+	removeSeam(seam, vertical);
+	
+	return newImg;
+}
+
+void SeamCarver::ResetImage(cv::Mat& img)
+{
+	img.copyTo(image);
+	calculateEnergyMap();
+}

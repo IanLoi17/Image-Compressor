@@ -11,6 +11,8 @@ public:
 	void removeHorizontalSeam(bool useGreedy);
 	cv::Mat getImage() const;
 	cv::Mat getEnergyMap() const;
+	cv::Mat carveSeamOnceAndShow(bool vertical);
+	void ResetImage(cv::Mat& img);
 
 private:
 	cv::Mat image;
