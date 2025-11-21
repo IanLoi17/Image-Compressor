@@ -28,6 +28,12 @@ int main()
 		bool showImageGenerated = false;
 		/******************* Showcase Seam Carving *******************/
 		cv::Mat originalImg = cv::imread("Images/image.jpg");
+		if (originalImg.empty())
+		{
+			std::cerr << "ERROR: Could not load Images/image.jpg for visualization" << std::endl;
+			std::cerr << "Please ensure the image file exists in the Images folder" << std::endl;
+			return -1;
+		}
 		SeamCarver visualizeCarverDP(originalImg.clone());
 		cv::Mat visualizeImgSeamCarve = originalImg;
 		cv::Mat visualizeImgSeamCarveResize;
@@ -120,6 +126,27 @@ int main()
 					visualizeCarverDP.removeVerticalSeamGraphCut();
 				visualizeImgSeamCarve = visualizeCarverDP.carveSeamOnceAndShowGraphCut(true);
 				currentSeamCarvedDimensions[0] -= 10;
+			}
+			if (cvui::button("GC x100"))
+			{
+				for (int i = 0; i < 99; ++i)
+					visualizeCarverDP.removeVerticalSeamGraphCut();
+				visualizeImgSeamCarve = visualizeCarverDP.carveSeamOnceAndShowGraphCut(true);
+				currentSeamCarvedDimensions[0] -= 100;
+			}
+			cvui::endRow();
+			cvui::beginRow(-1, -1, 20);
+			if (cvui::button("GC Height x1"))
+			{
+				visualizeImgSeamCarve = visualizeCarverDP.carveSeamOnceAndShowGraphCut(false);
+				--currentSeamCarvedDimensions[1];
+			}
+			if (cvui::button("GC x10"))
+			{
+				for (int i = 0; i < 9; ++i)
+					visualizeCarverDP.removeHorizontalSeamGraphCut();
+				visualizeImgSeamCarve = visualizeCarverDP.carveSeamOnceAndShowGraphCut(false);
+				currentSeamCarvedDimensions[1] -= 10;
 			}
 			cvui::endRow();
 

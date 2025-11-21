@@ -3,10 +3,15 @@
 #include <limits>
 #include <cmath>
 
-SeamCarver::SeamCarver(cv::Mat const& img)
+SeamCarver::SeamCarver(cv::Mat const& img) : energyMapValid(false)
 {
+	if (img.empty())
+	{
+		throw std::invalid_argument("Cannot create SeamCarver with empty image");
+	}
 	img.copyTo(image);
 	calculateEnergyMap();
+	energyMapValid = true;
 }
 
 void SeamCarver::calculateEnergyMap()
@@ -219,12 +224,24 @@ std::vector<int> SeamCarver::findHorizontalSeamGreedy()
 
 void SeamCarver::removeSeam(std::vector<int> const& seam, bool vertical)
 {
+	// Add safety checks
 	if (vertical)
 	{
+		if (image.cols <= 1)
+		{
+			std::cerr << "Warning: Cannot remove vertical seam, image width is too small" << std::endl;
+			return;
+		}
 		cv::Mat newImg(image.rows, image.cols - 1, image.type());
 		for (int i = 0; i < image.rows; i++)
 		{
 			int seamCol = seam[i];
+			// Bounds checking
+			if (seamCol < 0 || seamCol >= image.cols)
+			{
+				std::cerr << "Warning: Invalid seam column " << seamCol << " at row " << i << std::endl;
+				continue;
+			}
 			if (seamCol > 0)
 			{
 				image.row(i).colRange(0, seamCol).copyTo(newImg.row(i).colRange(0, seamCol));
@@ -241,10 +258,21 @@ void SeamCarver::removeSeam(std::vector<int> const& seam, bool vertical)
 
 	else
 	{
+		if (image.rows <= 1)
+		{
+			std::cerr << "Warning: Cannot remove horizontal seam, image height is too small" << std::endl;
+			return;
+		}
 		cv::Mat newImg(image.rows - 1, image.cols, image.type());
 		for (int j = 0; j < image.cols; ++j)
 		{
 			int seamRow = seam[j];
+			// Bounds checking
+			if (seamRow < 0 || seamRow >= image.rows)
+			{
+				std::cerr << "Warning: Invalid seam row " << seamRow << " at column " << j << std::endl;
+				continue;
+			}
 			if (seamRow > 0)
 			{
 				image.col(j).rowRange(0, seamRow).copyTo(newImg.col(j).rowRange(0, seamRow));

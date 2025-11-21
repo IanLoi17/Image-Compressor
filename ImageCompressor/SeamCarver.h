@@ -20,6 +20,7 @@ public:
 private:
 	cv::Mat image;
 	cv::Mat energyMap;
+	bool energyMapValid;
 
 	void calculateEnergyMap();
 	void calculateForwardEnergy();
