@@ -106,10 +106,29 @@ int main()
 				currentSeamCarvedDimensions[1] -= 100;
 			}
 			cvui::endRow();
+
+			cvui::printf(0.5, 0x00ff00, "Graph Cut (Forward Energy):");
+			cvui::beginRow(-1, -1, 20);
+			if (cvui::button("GC Width x1"))
+			{
+				visualizeImgSeamCarve = visualizeCarverDP.carveSeamOnceAndShowGraphCut(true);
+				--currentSeamCarvedDimensions[0];
+			}
+			if (cvui::button("GC x10"))
+			{
+				for (int i = 0; i < 9; ++i)
+					visualizeCarverDP.removeVerticalSeamGraphCut();
+				visualizeImgSeamCarve = visualizeCarverDP.carveSeamOnceAndShowGraphCut(true);
+				currentSeamCarvedDimensions[0] -= 10;
+			}
+			cvui::endRow();
+
 			if (cvui::button("Reset"))
 			{
 				visualizeCarverDP.ResetImage(originalImg);
 				visualizeImgSeamCarve = originalImg;
+				currentSeamCarvedDimensions[0] = originalImg.size().width;
+				currentSeamCarvedDimensions[1] = originalImg.size().height;
 			}
 
 			if (cvui::button("Exit Program"))
@@ -126,8 +145,17 @@ int main()
 				auto dim = cv::getWindowImageRect(VISUALIZE_WINDOW_NAME);
 
 				cvui::update(VISUALIZE_WINDOW_NAME);
-				cv::resize(visualizeImgSeamCarve, visualizeImgSeamCarveResize, cv::Size(dim.width, dim.height));
-				cvui::imshow(VISUALIZE_WINDOW_NAME, visualizeImgSeamCarveResize);
+				// Only resize if window dimensions are valid (non-zero)
+				if (dim.width > 0 && dim.height > 0)
+				{
+					cv::resize(visualizeImgSeamCarve, visualizeImgSeamCarveResize, cv::Size(dim.width, dim.height));
+					cvui::imshow(VISUALIZE_WINDOW_NAME, visualizeImgSeamCarveResize);
+				}
+				else
+				{
+					// Display original image if window dimensions are invalid
+					cvui::imshow(VISUALIZE_WINDOW_NAME, visualizeImgSeamCarve);
+				}
 			}
 			else
 			{
@@ -143,8 +171,17 @@ int main()
 					auto dim = cv::getWindowImageRect(COMPARISM_WINDOW_NAME);
 
 					cvui::update(COMPARISM_WINDOW_NAME);
-					cv::resize(cmpImg, cmpImgResize, cv::Size(dim.width, dim.height));
-					cvui::imshow(COMPARISM_WINDOW_NAME, cmpImgResize);
+					// Only resize if window dimensions are valid (non-zero)
+					if (dim.width > 0 && dim.height > 0)
+					{
+						cv::resize(cmpImg, cmpImgResize, cv::Size(dim.width, dim.height));
+						cvui::imshow(COMPARISM_WINDOW_NAME, cmpImgResize);
+					}
+					else
+					{
+						// Display original image if window dimensions are invalid
+						cvui::imshow(COMPARISM_WINDOW_NAME, cmpImg);
+					}
 				}
 				else
 					showImageGenerated = false;
