@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command:*)",
+      "Bash(\"x64\\Release\\ImageCompressor.exe\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
